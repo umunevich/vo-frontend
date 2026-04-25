@@ -1,0 +1,15 @@
+.setting-vo-form {
+    max-width: 600px;
+}
+
+.choose-device {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+}
+
+.control-section {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px;
+}
