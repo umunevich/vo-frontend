@@ -1,0 +1,4 @@
+.choose-device {
+    display: flex;
+    flex-direction: column;
+}

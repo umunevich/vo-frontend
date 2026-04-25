@@ -1,25 +1,30 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
-import { MatFormField, MatLabel, MatOption, MatSelect } from '@angular/material/select';
-import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
+import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-monocular-vo-form',
   imports: [
+    RouterModule,
+    RouterLink,
     ReactiveFormsModule,
     MatCard,
-    MatTabGroup,
-    MatTab,
-    MatFormField,
-    MatLabel,
+    MatTabsModule,
+    MatButtonModule,
     MatButton,
-    MatSelect,
-    MatOption
   ],
   templateUrl: './monocular-vo-form.html',
   styleUrl: './monocular-vo-form.css',
 })
 
-export class MonocularVoForm {}
+export class MonocularVoForm {
+  links = [
+    { label: 'Stream', path: 'stream' },
+    { label: 'From file', path: 'from-file' }
+  ];
+
+  activeLink = this.links[0];
+}

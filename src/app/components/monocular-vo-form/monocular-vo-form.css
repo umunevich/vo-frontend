@@ -5,12 +5,6 @@
     justify-self: center;
 }
 
-.choose-device {
-    display: flex;
-    flex-direction: column;
-    padding-top: 10px;
-}
-
 .control-section {
     display: flex;
     justify-content: center;
