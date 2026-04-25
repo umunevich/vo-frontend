@@ -1,5 +1,8 @@
 .setting-vo-form {
+    width: 100vw;
+    min-width: 300px;
     max-width: 600px;
+    justify-self: center;
 }
 
 .choose-device {

@@ -1,0 +1,17 @@
+.nav-bar {
+    padding: 5px 5px 0 5px;
+    display: flex;
+    justify-content: end;
+}
+
+.h1-monocular-vo {
+    margin-top: 100px;
+    justify-self: center;
+    text-align: center;
+    text-underline-offset: 5px;
+    line-height: 120%;
+}
+
+.monocular-vo-form {
+    margin-top: 80px;
+}
