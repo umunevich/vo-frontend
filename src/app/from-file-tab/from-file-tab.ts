@@ -3,6 +3,7 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormField, MatLabel } from '@angular/material/select';
+import { VoData } from '../services/vo-data';
 
 @Component({
   selector: 'app-from-file-tab',
@@ -18,14 +19,16 @@ import { MatFormField, MatLabel } from '@angular/material/select';
 })
 export class FromFileTab {
   selectedFileName: string = ''
-  selectedFile: File | null = null
+
+  constructor(private voData: VoData) {
+    this.selectedFileName = voData.selectedFile?.name ?? '';
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
       this.selectedFileName = file.name;
-      console.log('Обрано відео для VO:', this.selectedFileName);
+      this.voData.selectedFile = file;
     }
   }
 }

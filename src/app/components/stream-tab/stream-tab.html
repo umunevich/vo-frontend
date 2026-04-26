@@ -1,9 +1,14 @@
 <div class="choose-device">
   <mat-form-field appearance="fill">
     <mat-label>Choose device</mat-label>
-    <mat-select>
-      <mat-option value="dev1">Video device 1</mat-option>
-      <mat-option value="dev2">Video device 2</mat-option>
+    <mat-select [(value)]="selectedDevice" (selectionChange)="onCameraSelect($event.value)">
+      @for (camera of videoDevices$ | async; track camera.deviceId) {
+        <mat-option [value]="camera">
+          {{ camera.label || 'Camera ' + ($index + 1) }}
+        </mat-option>
+      } @empty {
+        <mat-option disabled>No cameras available</mat-option>
+      }
     </mat-select>
   </mat-form-field>
 </div>

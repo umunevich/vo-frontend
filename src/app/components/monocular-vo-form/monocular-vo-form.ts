@@ -3,7 +3,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
-import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
+import { VoData } from '../../services/vo-data';
 
 @Component({
   selector: 'app-monocular-vo-form',
@@ -27,4 +28,29 @@ export class MonocularVoForm {
   ];
 
   activeLink = this.links[0];
+
+  constructor(
+    private voData: VoData, 
+    private router: Router
+  ) {}
+
+  onStartVo() {
+    const currentUrl = this.router.url;
+
+    if (currentUrl.includes('stream')) {
+      console.log("Launch VO from camera: ", this.voData.selectedDevice);
+    } else {
+      console.log("Launch VO from file: ", this.voData.selectedFile);
+    }
+  }
+
+  disableStartVo() {
+    const currentUrl = this.router.url;
+
+    if (currentUrl.includes('stream')) {
+      return !this.voData.isReady('stream');
+    } else {
+      return !this.voData.isReady('file');
+    }
+  }
 }

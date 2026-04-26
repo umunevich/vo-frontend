@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { MonocularVoPage } from './components/monocular-vo-page/monocular-vo-page';
 import { MonocularVoAbout } from './components/monocular-vo-about/monocular-vo-about';
 import { StreamTab } from './components/stream-tab/stream-tab';
-import { FromFileTab } from './components/from-file-tab/from-file-tab';
+import { FromFileTab } from './from-file-tab/from-file-tab';
 
 export const routes: Routes = [
     { path: 'monocular-visual-odometry/about', component: MonocularVoAbout, title: 'VO - About' },
