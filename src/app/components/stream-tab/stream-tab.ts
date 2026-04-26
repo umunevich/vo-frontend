@@ -4,7 +4,6 @@ import { VoData } from '../../services/vo-data';
 import { MediaDevice } from '../../services/media-device';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { C } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-stream-tab',

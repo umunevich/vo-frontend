@@ -5,6 +5,7 @@ import { MatCard } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { VoData } from '../../services/vo-data';
+import { VoStrategyFactory } from '../../services/vo-launch-strategy/vo-strategy-factory';
 
 @Component({
   selector: 'app-monocular-vo-form',
@@ -31,16 +32,16 @@ export class MonocularVoForm {
 
   constructor(
     private voData: VoData, 
-    private router: Router
+    private router: Router,
+    private strategyFactory: VoStrategyFactory,
   ) {}
 
   onStartVo() {
-    const currentUrl = this.router.url;
-
-    if (currentUrl.includes('stream')) {
-      console.log("Launch VO from camera: ", this.voData.selectedDevice);
-    } else {
-      console.log("Launch VO from file: ", this.voData.selectedFile);
+    try {
+      const strategy = this.strategyFactory.getStrategy(this.router.url);
+      strategy.launch();
+    } catch (error) {
+      console.error(error);
     }
   }
 
