@@ -10,8 +10,8 @@ import { RouterLink } from "@angular/router";
     MatButton,
     RouterLink
 ],
-  templateUrl: './page.html',
-  styleUrl: './page.css',
+  templateUrl: './vo-page.html',
+  styleUrl: './vo-page.css',
 })
 export class MonocularPage {
   

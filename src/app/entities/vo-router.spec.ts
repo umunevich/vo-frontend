@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StreamStrategy } from './stream-strategy';
+import { VoRouter } from './vo-router';
 
-describe('StreamLaunchStrategy', () => {
-  let service: StreamStrategy;
+describe('Router', () => {
+  let service: VoRouter;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(StreamStrategy);
+    service = TestBed.inject(VoRouter);
   });
 
   it('should be created', () => {

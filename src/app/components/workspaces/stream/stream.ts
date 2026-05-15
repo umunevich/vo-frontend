@@ -21,7 +21,7 @@ export class StreamWorkspace implements OnInit {
     if (this.voData.selectedDevice) {
       try {
         const constraints = {
-          video: { deviceId: { exact: this.voData.selectedDevice.deviceId } }
+          video: { deviceId: { exact: this.voData.selectedDevice()?.deviceId } }
         };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         this.videoElement.nativeElement.srcObject = stream;

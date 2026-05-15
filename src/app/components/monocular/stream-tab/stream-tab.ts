@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatFormField, MatLabel, MatOption, MatSelect } from '@angular/material/select';
 import { VoData } from '@services/vo-data';
 import { MediaDevice } from '@services/media-device';
@@ -26,15 +26,15 @@ export class StreamTab implements OnInit {
     private mediaDevice: MediaDevice
   ) {
     this.videoDevices$ = mediaDevice.getVideoDevices();
-    this.selectedDevice = this.voData.selectedDevice;
+    this.selectedDevice = this.voData.selectedDevice();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.mediaDevice.checkAndLoadDevices();
   }
 
   onCameraSelect(camera: MediaDeviceInfo) {
     this.selectedDevice = camera;
-    this.voData.selectedDevice = camera;
+    this.voData.selectedDevice.set(camera);
   }
 }

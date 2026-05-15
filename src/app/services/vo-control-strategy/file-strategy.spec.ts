@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FileLaunchStrategy } from './file-strategy';
+import { FileStrategy } from './file-strategy';
 
 describe('FileLaunchStrategy', () => {
-  let service: FileLaunchStrategy;
+  let service: FileStrategy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FileLaunchStrategy);
+    service = TestBed.inject(FileStrategy);
   });
 
   it('should be created', () => {

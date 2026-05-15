@@ -3,7 +3,7 @@
     @for (link of links; track link) {
       <a mat-tab-link
          [routerLink]="link.path"
-         (click)="activeLink = link"
+         (click)="onSwitchTab(link)"
          [active]="activeLink === link"> 
          {{ link.label }} 
       </a>
@@ -17,6 +17,6 @@
   </mat-tab-nav-panel>
 
   <div class="control-section">
-    <button mat-flat-button [disabled]="disableStartVo()" (click)="onStartVo()">Start VO!</button>
+    <button mat-flat-button [disabled]="startDisabled()" (click)="onStartVo()">Start VO!</button>
   </div>
 </mat-card>

@@ -1,23 +1,26 @@
-import { Injectable } from '@angular/core';
-import { VoLaunchStrategy, VoReady } from './interface';
-import { Router } from '@angular/router';
+import { Inject, Injectable } from '@angular/core';
+import { VoStart, VoReady, Switch } from './interface';
 import { VoData } from '../vo-data';
+import { VoRouter } from '@entities/vo-router';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FileLaunchStrategy implements VoLaunchStrategy, VoReady {
+export class FileStrategy implements VoStart, VoReady, Switch {
   constructor(
-    private router: Router,
+    @Inject(VoRouter) private voRouter: VoRouter,
     private voData: VoData,
   ) {}
   
-  launch() {
-    console.log("📂 Starting File VO with file:", this.voData.selectedFile?.name);
-    this.router.navigate(['/monocular-visual-odometry/workspace']);
+  launch(): void {
+    this.voRouter.navigate('/monocular-visual-odometry/workspace/from-file');
   }
 
   ready(): boolean {
-    return this.voData.isReady('file');
+    return this.voData.ready('file');
+  }
+
+  switchOn(): void {
+    this.voData.selectedDevice.set(null);
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -20,15 +20,13 @@ import { VoData } from '@services/vo-data';
 export class FromFileTab {
   selectedFileName: string = ''
 
-  constructor(private voData: VoData) {
-    this.selectedFileName = voData.selectedFile?.name ?? '';
-  }
+  constructor(private voData: VoData) {}
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
       this.selectedFileName = file.name;
-      this.voData.selectedFile = file;
+      this.voData.selectedFile.set(file);
     }
   }
 }

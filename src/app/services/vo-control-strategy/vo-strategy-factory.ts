@@ -1,27 +1,30 @@
 import { Injectable } from '@angular/core';
-import { StreamLaunchStrategy } from './stream-strategy';
-import { FileLaunchStrategy } from './file-strategy';
-import { VoLaunchStrategy, VoReady } from './interface';
+import { StreamStrategy } from './stream-strategy';
+import { FileStrategy } from './file-strategy';
+import { VoStart, VoReady, Switch } from './interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VoStrategyFactory {
   constructor(
-    private streamStrategy: StreamLaunchStrategy,
-    private fileStrategy: FileLaunchStrategy,
+    private streamStrategy: StreamStrategy,
+    private fileStrategy: FileStrategy,
   ) {}
   
-  launchStrategy(url: string): VoLaunchStrategy {
-    if (url.includes('stream')) {
-      return this.streamStrategy;
-    } else if (url.includes('from-file')) {
-      return this.fileStrategy;
-    }
-    throw new Error('Unknown VO mode');
+  startStrategy(url: string): VoStart {
+    return this.strategy(url);
   }
 
   readyStrategy(url: string): VoReady {
+    return this.strategy(url);
+  }
+
+  switchStrategy(url: string): Switch {
+    return this.strategy(url);
+  }
+
+  private strategy(url: string): StreamStrategy | FileStrategy {
     if (url.includes('stream')) {
       return this.streamStrategy;
     } else if (url.includes('from-file')) {

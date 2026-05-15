@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, computed, Inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Router, RouterLink, RouterModule } from '@angular/router';
-import { VoData } from '@services/vo-data';
+import { RouterLink, RouterModule } from '@angular/router';
+import { VoRouter } from '@entities/vo-router';
 import { VoStrategyFactory } from '@services/vo-control-strategy/vo-strategy-factory';
 
 @Component({
@@ -30,28 +30,41 @@ export class MonocularForm {
 
   activeLink = this.links[0];
 
+  startDisabled = computed(() => {
+    try {
+      const strategy = this.strategyFactory.readyStrategy(this.voRouter.url);
+      return !strategy.ready();
+    } catch (error) {
+      console.error(error);
+      return true;
+    }
+  });
+
   constructor(
-    private voData: VoData, 
-    private router: Router,
+    @Inject(VoRouter) private voRouter: VoRouter,
     private strategyFactory: VoStrategyFactory,
   ) {}
 
-  onStartVo() {
+  onStartVo(): void {
     try {
-      const strategy = this.strategyFactory.launchStrategy(this.router.url);
+      const strategy = this.strategyFactory.startStrategy(this.voRouter.url);
       strategy.launch();
     } catch (error) {
       console.error(error);
     }
   }
 
-  disableStartVo(): boolean {
+  onSwitchTab(link: { label: string, path: string }): void {
     try {
-      const strategy = this.strategyFactory.readyStrategy(this.router.url);
-      return strategy.ready();
+      this.switchOn(link.path);
+      this.activeLink = link;
     } catch (error) {
       console.error(error);
-      return false;
     }
+  }
+
+  private switchOn(url: string): void {
+    const strategy = this.strategyFactory.switchStrategy(url);
+    strategy.switchOn();
   }
 }
