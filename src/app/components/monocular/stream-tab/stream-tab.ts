@@ -1,9 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, WritableSignal } from '@angular/core';
 import { MatFormField, MatLabel, MatOption, MatSelect } from '@angular/material/select';
 import { VoData } from '@services/vo-data';
 import { MediaDevice } from '@services/media-device';
-import { Observable } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-stream-tab',
@@ -12,21 +10,19 @@ import { AsyncPipe } from '@angular/common';
     MatLabel,
     MatSelect,
     MatOption,
-    AsyncPipe
   ],
   templateUrl: './stream-tab.html',
   styleUrl: './stream-tab.css',
 })
 export class StreamTab implements OnInit {
-  videoDevices$: Observable<MediaDeviceInfo[]>
+  videoDevices: WritableSignal<MediaDeviceInfo[]>
   selectedDevice: MediaDeviceInfo | null = null
 
   constructor(
     private voData: VoData,
     private mediaDevice: MediaDevice
   ) {
-    this.videoDevices$ = mediaDevice.getVideoDevices();
-    this.selectedDevice = this.voData.selectedDevice();
+    this.videoDevices = this.mediaDevice.videoDevices;
   }
 
   ngOnInit(): void {

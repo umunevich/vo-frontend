@@ -1,8 +1,8 @@
 <div class="choose-device">
   <mat-form-field appearance="fill">
     <mat-label>Choose device</mat-label>
-    <mat-select [(value)]="selectedDevice" (selectionChange)="onCameraSelect($event.value)">
-      @for (camera of videoDevices$ | async; track camera.deviceId) {
+    <mat-select [value]="selectedDevice" (selectionChange)="onCameraSelect($event.value)">
+      @for (camera of videoDevices(); track camera.deviceId) {
         <mat-option [value]="camera">
           {{ camera.label || 'Camera ' + ($index + 1) }}
         </mat-option>

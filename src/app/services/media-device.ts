@@ -1,34 +1,55 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MediaDevice {
-  private videoDevicesSubject = new BehaviorSubject<MediaDeviceInfo[]>([]);
-  videoDevices$ = this.videoDevicesSubject.asObservable();
+  readonly videoDevices = signal<MediaDeviceInfo[]>([]);
+  readonly error = signal<string | null>(null);
 
-  private errorSubject = new BehaviorSubject<string | null>(null);
-  error$ = this.errorSubject.asObservable();
+  constructor() {
+    navigator.mediaDevices.ondevicechange = () => this.checkAndLoadDevices();
+  }
 
-  async checkAndLoadDevices() {
+  async checkAndLoadDevices(): Promise<void> {
+    let stream: MediaStream | null = null;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      let cameras = await this.cameras();
 
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const cameras = devices.filter(d => d.kind === 'videoinput');
+      if (!this.labels(cameras)) {
+        stream = await this.videoStream();
+        cameras = await this.cameras();
+      }
 
-      this.videoDevicesSubject.next(cameras);
-      this.errorSubject.next(null);
+      this.videoDevices.set(cameras);
+      this.error.set(null);
 
-      stream.getTracks().forEach(track => track.stop());
     } catch(err: any) {
-      this.errorSubject.next(err.message || 'Access denied');
+      this.error.set(err.message || 'Access denied to media devices');
       console.error('Media Device Error:', err);
+    } finally {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        console.log('Temporary camera check stream stopped.');
+      }
     }
   }
 
-  getVideoDevices(): Observable<MediaDeviceInfo[]> {
-    return this.videoDevices$;
+  private async videoStream(): Promise<MediaStream | null> {
+    return navigator.mediaDevices.getUserMedia({ video: true });
   }
+
+  private async cameras(): Promise<MediaDeviceInfo[]> {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter(d => d.kind === 'videoinput');
+    return cameras;
+  }
+
+  private labels(cameras: MediaDeviceInfo[]): boolean {
+    return cameras.length > 0 && cameras.every(c => c.label !== '');
+  }
+
+
+
 }

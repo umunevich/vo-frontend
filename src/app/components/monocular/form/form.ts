@@ -32,7 +32,7 @@ export class MonocularForm {
 
   startDisabled = computed(() => {
     try {
-      const strategy = this.strategyFactory.readyStrategy(this.voRouter.url);
+      const strategy = this.strategyFactory.readyStrategy(this.voRouter.url());
       return !strategy.ready();
     } catch (error) {
       console.error(error);
@@ -47,7 +47,7 @@ export class MonocularForm {
 
   onStartVo(): void {
     try {
-      const strategy = this.strategyFactory.startStrategy(this.voRouter.url);
+      const strategy = this.strategyFactory.startStrategy(this.voRouter.url());
       strategy.launch();
     } catch (error) {
       console.error(error);
