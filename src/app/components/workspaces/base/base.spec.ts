@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VoWorkspace } from './vo-workspace';
+import { BaseWorkspace } from './base';
 
-describe('VoWorkspace', () => {
-  let component: VoWorkspace;
-  let fixture: ComponentFixture<VoWorkspace>;
+describe('Base', () => {
+  let component: BaseWorkspace;
+  let fixture: ComponentFixture<BaseWorkspace>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VoWorkspace],
+      imports: [BaseWorkspace],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(VoWorkspace);
+    fixture = TestBed.createComponent(BaseWorkspace);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

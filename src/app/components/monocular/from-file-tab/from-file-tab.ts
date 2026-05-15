@@ -3,7 +3,7 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormField, MatLabel } from '@angular/material/select';
-import { VoData } from '../services/vo-data';
+import { VoData } from '@services/vo-data';
 
 @Component({
   selector: 'app-from-file-tab',

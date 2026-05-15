@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FileLaunchStrategy } from './file-launch-strategy';
+import { FileLaunchStrategy } from './file-strategy';
 
 describe('FileLaunchStrategy', () => {
   let service: FileLaunchStrategy;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatFormField, MatLabel, MatOption, MatSelect } from '@angular/material/select';
-import { VoData } from '../../services/vo-data';
-import { MediaDevice } from '../../services/media-device';
+import { VoData } from '@services/vo-data';
+import { MediaDevice } from '@services/media-device';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MonocularVoPage } from './monocular-vo-page';
+import { AboutPage } from './about-page';
 
-describe('MonocularVoPage', () => {
-  let component: MonocularVoPage;
-  let fixture: ComponentFixture<MonocularVoPage>;
+describe('MonocularAbout', () => {
+  let component: AboutPage;
+  let fixture: ComponentFixture<AboutPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MonocularVoPage],
+      imports: [AboutPage],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MonocularVoPage);
+    fixture = TestBed.createComponent(AboutPage);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

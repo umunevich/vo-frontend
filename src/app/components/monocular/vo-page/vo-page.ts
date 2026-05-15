@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
-import { MonocularVoForm } from "../monocular-vo-form/monocular-vo-form";
+import { MonocularForm } from "../form/form";
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-monocular-vo-page',
   imports: [
-    MonocularVoForm,
+    MonocularForm,
     MatButton,
     RouterLink
 ],
-  templateUrl: './monocular-vo-page.html',
-  styleUrl: './monocular-vo-page.css',
+  templateUrl: './page.html',
+  styleUrl: './page.css',
 })
-export class MonocularVoPage {
+export class MonocularPage {
   
 }

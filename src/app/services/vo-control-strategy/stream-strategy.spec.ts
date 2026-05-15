@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StreamLaunchStrategy } from './stream-launch-strategy';
+import { StreamLaunchStrategy } from './stream-strategy';
 
 describe('StreamLaunchStrategy', () => {
   let service: StreamLaunchStrategy;

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { VoLaunchStrategy } from './interface';
+import { VoLaunchStrategy, VoReady } from './interface';
 import { Router } from '@angular/router';
 import { VoData } from '../vo-data';
 
 @Injectable({
   providedIn: 'root',
 })
-export class StreamLaunchStrategy implements VoLaunchStrategy {
+export class StreamLaunchStrategy implements VoLaunchStrategy, VoReady {
   constructor(
     private router: Router,
     private voData: VoData,
@@ -15,5 +15,9 @@ export class StreamLaunchStrategy implements VoLaunchStrategy {
   launch() {
     console.log("🚀 Starting Stream VO with device:", this.voData.selectedDevice);
     this.router.navigate(['/monocular-visual-odometry/workspace'])
+  }
+
+  ready(): boolean {
+    return this.voData.isReady('stream');
   }
 }

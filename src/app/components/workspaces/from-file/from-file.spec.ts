@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MonocularVoForm } from './monocular-vo-form';
+import { FromFile } from './from-file';
 
-describe('MonocularVoForm', () => {
-  let component: MonocularVoForm;
-  let fixture: ComponentFixture<MonocularVoForm>;
+describe('FromFile', () => {
+  let component: FromFile;
+  let fixture: ComponentFixture<FromFile>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MonocularVoForm],
+      imports: [FromFile],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MonocularVoForm);
+    fixture = TestBed.createComponent(FromFile);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
