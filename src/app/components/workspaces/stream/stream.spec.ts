@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Stream } from './stream';
+import { StreamWorkspace } from './stream';
 
 describe('Stream', () => {
-  let component: Stream;
-  let fixture: ComponentFixture<Stream>;
+  let component: StreamWorkspace;
+  let fixture: ComponentFixture<StreamWorkspace>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Stream],
+      imports: [StreamWorkspace],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Stream);
+    fixture = TestBed.createComponent(StreamWorkspace);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

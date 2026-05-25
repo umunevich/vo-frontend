@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
+
 @Injectable({
   providedIn: 'root',
 })
@@ -30,10 +31,13 @@ export class MediaDevice {
       console.error('Media Device Error:', err);
     } finally {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        console.log('Temporary camera check stream stopped.');
+        this.stopStream(stream);
       }
     }
+  }
+
+  private stopStream(stream: MediaStream): void {
+    stream.getTracks().forEach(track => track.stop());
   }
 
   private async videoStream(): Promise<MediaStream | null> {

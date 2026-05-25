@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { VoData } from '../../../services/vo-data';
 import { ViewChild, ElementRef } from '@angular/core';
 
@@ -8,8 +8,9 @@ import { ViewChild, ElementRef } from '@angular/core';
   templateUrl: './stream.html',
   styleUrl: './stream.css',
 })
-export class StreamWorkspace implements OnInit {
+export class StreamWorkspace implements OnInit, OnDestroy {
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
+  stream: MediaStream | null = null;
 
   constructor(private voData: VoData){}
 
@@ -23,11 +24,17 @@ export class StreamWorkspace implements OnInit {
         const constraints = {
           video: { deviceId: { exact: this.voData.selectedDevice()?.deviceId } }
         };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        this.videoElement.nativeElement.srcObject = stream;
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+        this.videoElement.nativeElement.srcObject = this.stream;
       } catch (err) {
         console.error("Помилка доступу до камери: ", err);
       }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
     }
   }
 }
