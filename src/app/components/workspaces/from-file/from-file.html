@@ -1,0 +1,20 @@
+<div class="workspace-container">
+  <div class="media-panel">
+    <div class="controls">
+      <button mat-flat-button color="primary" (click)="startProcessing()" [disabled]="isProcessing">
+        <mat-icon>play_arrow</mat-icon> Start VO
+      </button>
+      <button mat-stroked-button color="warn" (click)="stopProcessing()" [disabled]="!isProcessing">
+        <mat-icon>stop</mat-icon> Stop
+      </button>
+    </div>
+
+    <video #videoPlayer controls muted playsinline class="video-preview"></video>
+    
+    <canvas #frameCanvas style="display: none;"></canvas>
+  </div>
+
+  <div class="plot-panel">
+    <div id="plotly-vo-chart" style="width: 100%; height: 500px;"></div>
+  </div>
+</div>

@@ -3,13 +3,15 @@
         <h3>Camera Stream</h3>
         <div class="video-wrapper">
             <video #videoElement autoplay playsinline muted></video>
+            
+            <canvas #canvasElement style="display: none;"></canvas>
         </div>
     </div>
 
     <div class="trajectory-container">
-        <h3>Flight Trajectory (XZ Plane)</h3>
+        <h3>Flight Trajectory (3D)</h3>
         <div class="plot-wrapper">
-
+            <div #plotElement id="plotly-graph"></div>
         </div>
     </div>
 </div>

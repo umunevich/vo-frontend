@@ -5,7 +5,7 @@
     <mat-icon matSuffix>movie</mat-icon>
   </mat-form-field>
 
-  <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+  <input type="file" #fileInput (change)="onFileSelected($event)" accept="video/mp4,video/avi,video/*" style="display: none;">
   
   <button matButton="outlined" (click)="fileInput.click()">
     <mat-icon>upload_file</mat-icon>
