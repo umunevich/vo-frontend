@@ -66,7 +66,11 @@ export class FromFileWorkspace {
       }
     };
 
-    Plotly.newPlot('plotly-vo-chart', [trace], layout);
+    const config = {
+      responsive: true
+    };
+
+    Plotly.newPlot('plotly-vo-chart', [trace], layout, config);
   }
 
   startProcessing() {
