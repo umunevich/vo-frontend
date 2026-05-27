@@ -1,1 +1,7 @@
-<p>monocular-vo-about works!</p>
+<div class="about-container">
+  <button mat-flat-button class="back-button" (click)="goBack()">
+    Back
+  </button>
+
+  <markdown [data]="markdownContent()" [katex]="true"></markdown>
+</div>

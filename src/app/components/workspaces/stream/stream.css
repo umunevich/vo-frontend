@@ -1,51 +1,76 @@
-.workspace {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 20px;
-  height: calc(100vh - 100px);
+* {
+  box-sizing: border-box;
 }
 
-.video-container, .trajectory-container {
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+:host {
+  display: block;
+  height: calc(100vh - 64px); 
+  width: 100%;
 }
 
-h3 {
-  margin-top: 0;
-  color: #333;
-  font-size: 1.1rem;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 10px;
-}
-
-.video-wrapper, .plot-wrapper {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-  border-radius: 4px;
+.workspace-fullscreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #111;
   overflow: hidden;
 }
 
-#video-stream {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.trajectory-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
-@media (max-width: 1024px) {
-  .workspace {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
+#plotly-graph {
+  width: 100%;
+  height: 100%;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
   
-  .video-container, .trajectory-container {
-    height: 400px;
+  width: 320px;
+  height: 240px; 
+  
+  z-index: 10;
+  
+
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  
+  display: flex;
+  flex-direction: column;
+
+  transition: all 0.3s ease; 
+}
+
+.video-stream {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .video-overlay {
+    width: 180px;
+    height: 135px;
+    top: 10px;
+    left: 10px;
   }
 }

@@ -1,11 +1,16 @@
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
-import { VoData } from '../../../services/vo-data';
+import { VoData } from '@services/vo-data';
 import { VoStreamService, TrajectoryCoords } from '@services/vo-stream';
 import { Subscription } from 'rxjs';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component({
   selector: 'app-stream-workspace',
+  standalone: true,
+  imports: [
+    DragDropModule
+  ],
   templateUrl: './stream.html',
   styleUrls: ['./stream.css'],
 })
@@ -92,7 +97,11 @@ export class StreamWorkspace implements OnInit, OnDestroy {
       }
     };
 
-    Plotly.newPlot(this.plotElement.nativeElement, [trace], layout);
+    const config: Partial<Plotly.Config> = {
+      responsive: true
+    };
+
+    Plotly.newPlot(this.plotElement.nativeElement, [trace], layout, config);
   }
 
   extractAndSendFrame() {

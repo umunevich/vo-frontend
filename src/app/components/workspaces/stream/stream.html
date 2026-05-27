@@ -1,17 +1,12 @@
-<div class="workspace">
-    <div class="video-container">
-        <h3>Camera Stream</h3>
-        <div class="video-wrapper">
-            <video #videoElement autoplay playsinline muted></video>
-            
-            <canvas #canvasElement style="display: none;"></canvas>
-        </div>
+<div class="workspace-fullscreen">
+    
+    <div class="trajectory-layer">
+        <div #plotElement id="plotly-graph"></div>
     </div>
 
-    <div class="trajectory-container">
-        <h3>Flight Trajectory (3D)</h3>
-        <div class="plot-wrapper">
-            <div #plotElement id="plotly-graph"></div>
-        </div>
+    <div class="video-overlay" cdkDrag cdkDragBoundary=".workspace-fullscreen">        
+        <video #videoElement class="video-stream" autoplay playsinline muted></video>
+        <canvas #canvasElement style="display: none;"></canvas>
     </div>
+
 </div>

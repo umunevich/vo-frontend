@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'katex/dist/katex.min.css';
+
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/assets/fonts/roboto-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
