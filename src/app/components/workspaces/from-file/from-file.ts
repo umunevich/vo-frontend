@@ -31,7 +31,6 @@ export class FromFileWorkspace {
 
   ngOnDestroy() {
     this.stopProcessing();
-    // Звільняємо пам'ять браузера від створеного URL
     if (this.videoUrl) {
       URL.revokeObjectURL(this.videoUrl);
     }
@@ -40,9 +39,7 @@ export class FromFileWorkspace {
   private loadVideoFile() {
     const file = this.voData.selectedFile();
     if (file) {
-      // Створюємо локальне посилання на файл для тегу <video>
       this.videoUrl = URL.createObjectURL(file);
-      // Angular потребує трохи часу на рендеринг ViewChild
       setTimeout(() => {
         this.videoElement.nativeElement.src = this.videoUrl!;
       }, 0);
@@ -79,21 +76,18 @@ export class FromFileWorkspace {
     const video = this.videoElement.nativeElement;
     video.play();
 
-    // Підключаємось до вашого FastAPI бекенду
     this.ws = new WebSocket('ws://localhost:8000/ws/vo-stream');
 
     this.ws.onopen = () => {
       console.log('WebSocket Connected. Starting frame extraction...');
-      this.extractAndSendFrame(); // Відправляємо перший кадр
+      this.extractAndSendFrame();
     };
 
     this.ws.onmessage = (event) => {
       const pose = JSON.parse(event.data);
       this.updatePlot(pose.x, pose.y, pose.z);
       
-      // Ping-Pong: як тільки отримали координати — беремо і шлемо наступний кадр
       if (this.isProcessing && !video.paused && !video.ended) {
-        // requestAnimationFrame робить виклик синхронним з оновленням екрану
         requestAnimationFrame(() => this.extractAndSendFrame());
       } else if (video.ended) {
         this.stopProcessing();
@@ -119,22 +113,17 @@ export class FromFileWorkspace {
 
     if (!context || video.videoWidth === 0) return;
 
-    // Встановлюємо розмір полотна під розмір відео
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Малюємо поточний кадр на полотні
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Конвертуємо у Base64 (якість 0.7 для швидкості)
     const base64Frame = canvas.toDataURL('image/jpeg', 0.7);
     
-    // Відправляємо на FastAPI
     this.ws.send(base64Frame);
   }
 
   private updatePlot(x: number, y: number, z: number) {
-    // Ефективно додаємо нову точку до графіка без повного перемалювання
     Plotly.extendTraces('plotly-vo-chart', { x: [[x]], y: [[y]], z: [[z]] }, [0]);
   }
 }

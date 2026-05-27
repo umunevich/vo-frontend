@@ -60,7 +60,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
         const constraints = {
           video: { 
             deviceId: { exact: this.voData.selectedDevice()?.deviceId },
-            width: { ideal: 640 }, // Зменшуємо роздільну здатність для швидкодії VO
+            width: { ideal: 640 },
             height: { ideal: 480 } 
           }
         };
@@ -107,17 +107,15 @@ export class StreamWorkspace implements OnInit, OnDestroy {
       
       const frameData = canvas.toDataURL('image/jpeg', 0.6);
       
-      // Передаємо кадр у сервіс
       this.streamService.sendFrame(frameData); 
     } else {
-      // Чекаємо, якщо відео "підвисло"
       requestAnimationFrame(() => this.extractAndSendFrame());
     }
   }
 
   ngOnDestroy(): void {
-    this.subs.unsubscribe(); // Відписуємось, щоб уникнути витоків пам'яті
-    this.streamService.disconnect(); // Закриваємо сокет через сервіс
+    this.subs.unsubscribe();
+    this.streamService.disconnect();
     
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
