@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { environment } from '@environments/environment';
+import { Subject } from 'rxjs';
 
 export interface TrajectoryCoords {
   x: number;
@@ -19,27 +20,30 @@ export class VoStreamService {
   private readyForNextFrameSubject = new Subject<void>();
   readyForNextFrame$ = this.readyForNextFrameSubject.asObservable();
 
-  connect(url: string = 'ws://localhost:8000/ws/vo-stream') {
+  connect(url: string = environment.voBackendWsUrl) {
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
+
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
-      console.log('Підключено до Python VO Backend');
+      console.log('Connected to Python VO Backend');
       this.readyForNextFrameSubject.next(); 
     };
 
     this.ws.onmessage = (event) => {
       const coords: TrajectoryCoords = JSON.parse(event.data);
       this.coordsSubject.next(coords);
-      
       this.readyForNextFrameSubject.next(); 
     };
 
-    this.ws.onclose = () => console.log('WebSocket закрито');
-    this.ws.onerror = (error) => console.error('Помилка WebSocket', error);
+    this.ws.onclose = () => console.log('WebSocket connection closed');
+    this.ws.onerror = (error) => console.error('WebSocket error:', error);
   }
 
   sendFrame(frameData: string) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(frameData);
     }
   }

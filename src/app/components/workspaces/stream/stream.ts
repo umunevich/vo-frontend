@@ -8,9 +8,7 @@ import * as Plotly from 'plotly.js-dist-min';
 @Component({
   selector: 'app-stream-workspace',
   standalone: true,
-  imports: [
-    DragDropModule
-  ],
+  imports: [DragDropModule],
   templateUrl: './stream.html',
   styleUrls: ['./stream.css'],
 })
@@ -20,8 +18,8 @@ export class StreamWorkspace implements OnInit, OnDestroy {
   @ViewChild('plotElement', { static: true }) plotElement!: ElementRef<HTMLDivElement>;
 
   stream: MediaStream | null = null;
-  
   trajectory = { x: [0], y: [0], z: [0] };
+  
   private subs = new Subscription();
 
   constructor(
@@ -31,9 +29,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initPlot();
-    
     this.setupNetworkListeners();
-
     this.startVideo().then(() => {
       this.streamService.connect();
     });
@@ -60,19 +56,28 @@ export class StreamWorkspace implements OnInit, OnDestroy {
   }
   
   async startVideo() {
-    if (this.voData.selectedDevice()) {
+    const selectedDevice = this.voData.selectedDevice();
+    if (selectedDevice) {
       try {
         const constraints = {
           video: { 
-            deviceId: { exact: this.voData.selectedDevice()?.deviceId },
+            deviceId: { exact: selectedDevice.deviceId },
             width: { ideal: 640 },
             height: { ideal: 480 } 
           }
         };
         this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-        this.videoElement.nativeElement.srcObject = this.stream;
+        const video = this.videoElement.nativeElement;
+        video.srcObject = this.stream;
+
+        // Коли відео реально отримає метадані (розподільчу здатність), 
+        // про всяк випадок штовхаємо екстракцію
+        video.onloadedmetadata = () => {
+          requestAnimationFrame(() => this.extractAndSendFrame());
+        };
+
       } catch (err) {
-        console.error("Помилка доступу до камери: ", err);
+        console.error("Failed to access camera: ", err);
       }
     }
   }
@@ -85,21 +90,20 @@ export class StreamWorkspace implements OnInit, OnDestroy {
       type: 'scatter3d',
       mode: 'lines+markers',
       marker: { size: 3, color: 'red' },
-      line: { color: 'blue', width: 2 }
+      line: { color: 'red', width: 2 },
+      name: 'Live Trajectory'
     };
 
     const layout: Partial<Plotly.Layout> = {
       margin: { l: 0, r: 0, b: 0, t: 0 },
       scene: {
-        xaxis: { title: { text: 'X (m)' } },
-        yaxis: { title: { text: 'Y (m)' } },
-        zaxis: { title: { text: 'Z (m)' } }
+        xaxis: { title: { text: 'X (Right)' } },
+        yaxis: { title: { text: 'Y (Down)' } },
+        zaxis: { title: { text: 'Z (Forward)' } }
       }
     };
 
-    const config: Partial<Plotly.Config> = {
-      responsive: true
-    };
+    const config: Partial<Plotly.Config> = { responsive: true };
 
     Plotly.newPlot(this.plotElement.nativeElement, [trace], layout, config);
   }
@@ -109,17 +113,23 @@ export class StreamWorkspace implements OnInit, OnDestroy {
     const canvas = this.canvasElement.nativeElement;
     const context = canvas.getContext('2d');
 
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      const frameData = canvas.toDataURL('image/jpeg', 0.6);
-      
-      this.streamService.sendFrame(frameData); 
-    } else {
+    // Перевіряємо суто наявність контексту канвасу
+    if (!context) return;
+
+    // Якщо відео ще "холодне" (не підвантажилось), чекаємо наступного кадру анімації
+    if (video.videoWidth === 0 || video.readyState < video.HAVE_ENOUGH_DATA) {
       requestAnimationFrame(() => this.extractAndSendFrame());
+      return;
     }
+
+    // Якщо код дійшов сюди — відео 100% готове і має розміри
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const frameData = canvas.toDataURL('image/jpeg', 0.6);
+    
+    this.streamService.sendFrame(frameData); 
   }
 
   ngOnDestroy(): void {

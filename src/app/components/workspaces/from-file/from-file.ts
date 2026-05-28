@@ -1,39 +1,64 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { VoData } from '@services/vo-data';
-import { VoStreamService } from '@services/vo-stream';
-
-declare var Plotly: any;
+import { VoStreamService, TrajectoryCoords } from '@services/vo-stream';
+import { Subscription } from 'rxjs';
+import * as Plotly from 'plotly.js-dist-min';
 
 @Component({
   selector: 'app-from-file-workspace',
+  standalone: true,
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './from-file.html',
   styleUrl: './from-file.css',
 })
-export class FromFileWorkspace {
-  @ViewChild('videoPlayer') videoElement!: ElementRef<HTMLVideoElement>;
-  @ViewChild('frameCanvas') canvasElement!: ElementRef<HTMLCanvasElement>;
+export class FromFileWorkspace implements OnInit, OnDestroy {
+  @ViewChild('videoPlayer', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('frameCanvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('plotElement', { static: true }) plotElement!: ElementRef<HTMLDivElement>;
 
   isProcessing: boolean = false;
   videoUrl: string | null = null;
+  trajectory = { x: [0], y: [0], z: [0] };
   
-  private processInterval: any;
-  private ws!: WebSocket;
+  private subs = new Subscription();
 
-  constructor(private voData: VoData) {}
+  constructor(
+    private voData: VoData,
+    @Inject(VoStreamService) private streamService: VoStreamService
+  ) {}
 
   ngOnInit() {
     this.initPlotly();
+    this.setupNetworkListeners();
     this.loadVideoFile();
   }
 
-  ngOnDestroy() {
-    this.stopProcessing();
-    if (this.videoUrl) {
-      URL.revokeObjectURL(this.videoUrl);
-    }
+  private setupNetworkListeners() {
+    this.subs.add(
+      this.streamService.coords$.subscribe((coords: TrajectoryCoords) => {
+        this.trajectory.x.push(coords.x);
+        this.trajectory.y.push(coords.y);
+        this.trajectory.z.push(coords.z);
+
+        Plotly.extendTraces(this.plotElement.nativeElement, {
+          x: [[coords.x]], y: [[coords.y]], z: [[coords.z]]
+        }, [0]);
+      })
+    );
+
+    this.subs.add(
+      this.streamService.readyForNextFrame$.subscribe(() => {
+        const video = this.videoElement.nativeElement;
+        
+        if (this.isProcessing && !video.paused && !video.ended) {
+          requestAnimationFrame(() => this.extractAndSendFrame());
+        } else if (video.ended) {
+          this.stopProcessing();
+        }
+      })
+    );
   }
 
   private loadVideoFile() {
@@ -47,67 +72,44 @@ export class FromFileWorkspace {
   }
 
   private initPlotly() {
-    const trace = {
-      x: [0], y: [0], z: [0],
+    const trace: Plotly.Data = {
+      x: this.trajectory.x, 
+      y: this.trajectory.y, 
+      z: this.trajectory.z,
       mode: 'lines+markers',
-      marker: { size: 4, color: 'blue' },
+      marker: { size: 3, color: 'blue' },
       line: { width: 2, color: 'blue' },
       type: 'scatter3d',
       name: 'UAV Trajectory'
     };
 
-    const layout = {
-      title: 'Visual Odometry Path',
+    const layout: Partial<Plotly.Layout> = {
+      title: { text: 'Visual Odometry Path' },
       margin: { l: 0, r: 0, b: 0, t: 40 },
       scene: {
-        xaxis: { title: 'X (Right)' },
-        yaxis: { title: 'Y (Down)' },
-        zaxis: { title: 'Z (Forward)' }
+        xaxis: { title: { text: 'X (Right)' } },
+        yaxis: { title: { text: 'Y (Down)' } },
+        zaxis: { title: { text: 'Z (Forward)' } }
       }
     };
 
-    const config = {
-      responsive: true
-    };
+    const config: Partial<Plotly.Config> = { responsive: true };
 
-    Plotly.newPlot('plotly-vo-chart', [trace], layout, config);
+    Plotly.newPlot(this.plotElement.nativeElement, [trace], layout, config);
   }
 
   startProcessing() {
     if (!this.voData.selectedFile()) return;
     
     this.isProcessing = true;
-    const video = this.videoElement.nativeElement;
-    video.play();
-
-    this.ws = new WebSocket('ws://localhost:8000/ws/vo-stream');
-
-    this.ws.onopen = () => {
-      console.log('WebSocket Connected. Starting frame extraction...');
-      this.extractAndSendFrame();
-    };
-
-    this.ws.onmessage = (event) => {
-      const pose = JSON.parse(event.data);
-      this.updatePlot(pose.x, pose.y, pose.z);
-      
-      if (this.isProcessing && !video.paused && !video.ended) {
-        requestAnimationFrame(() => this.extractAndSendFrame());
-      } else if (video.ended) {
-        this.stopProcessing();
-      }
-    };
-
-    this.ws.onerror = (error) => console.error('WebSocket Error:', error);
+    this.videoElement.nativeElement.play();
+    this.streamService.connect();
   }
 
   stopProcessing() {
     this.isProcessing = false;
     this.videoElement.nativeElement.pause();
-    
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.close();
-    }
+    this.streamService.disconnect();
   }
 
   private extractAndSendFrame() {
@@ -119,15 +121,17 @@ export class FromFileWorkspace {
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const base64Frame = canvas.toDataURL('image/jpeg', 0.7);
-    
-    this.ws.send(base64Frame);
+    const base64Frame = canvas.toDataURL('image/jpeg', 0.6);
+    this.streamService.sendFrame(base64Frame);
   }
 
-  private updatePlot(x: number, y: number, z: number) {
-    Plotly.extendTraces('plotly-vo-chart', { x: [[x]], y: [[y]], z: [[z]] }, [0]);
+  ngOnDestroy() {
+    this.stopProcessing();
+    this.subs.unsubscribe();
+    if (this.videoUrl) {
+      URL.revokeObjectURL(this.videoUrl);
+    }
   }
 }
