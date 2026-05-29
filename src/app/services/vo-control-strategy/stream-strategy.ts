@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Switch, VoReady, VoStart } from './interface';
 import { VoRouter } from '@entities/vo-router';
-import { VoData } from '../vo-data';
+import { VoFormData } from '../vo-form-data';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { VoData } from '../vo-data';
 export class StreamStrategy implements VoStart, VoReady, Switch {
   constructor(
     @Inject(VoRouter) private voRouter: VoRouter,
-    private voData: VoData,
+    private voData: VoFormData,
   ) {}
 
   launch(): void {

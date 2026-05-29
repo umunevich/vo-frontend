@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
-import { VoData } from '@services/vo-data';
+import { VoFormData } from '@services/vo-form-data';
 import { VoStreamService, TrajectoryCoords } from '@services/vo-stream';
 import { Subscription } from 'rxjs';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -23,7 +23,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
   private subs = new Subscription();
 
   constructor(
-    private voData: VoData,
+    private voFormData: VoFormData,
     @Inject(VoStreamService) private streamService: VoStreamService
   ) {}
 
@@ -31,7 +31,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
     this.initPlot();
     this.setupNetworkListeners();
     this.startVideo().then(() => {
-      this.streamService.connect();
+      this.streamService.connect(this.voFormData.selectedConfigId());
     });
   }
 
@@ -56,7 +56,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
   }
   
   async startVideo() {
-    const selectedDevice = this.voData.selectedDevice();
+    const selectedDevice = this.voFormData.selectedDevice();
     if (selectedDevice) {
       try {
         const constraints = {
@@ -70,8 +70,6 @@ export class StreamWorkspace implements OnInit, OnDestroy {
         const video = this.videoElement.nativeElement;
         video.srcObject = this.stream;
 
-        // Коли відео реально отримає метадані (розподільчу здатність), 
-        // про всяк випадок штовхаємо екстракцію
         video.onloadedmetadata = () => {
           requestAnimationFrame(() => this.extractAndSendFrame());
         };
@@ -113,16 +111,13 @@ export class StreamWorkspace implements OnInit, OnDestroy {
     const canvas = this.canvasElement.nativeElement;
     const context = canvas.getContext('2d');
 
-    // Перевіряємо суто наявність контексту канвасу
     if (!context) return;
 
-    // Якщо відео ще "холодне" (не підвантажилось), чекаємо наступного кадру анімації
     if (video.videoWidth === 0 || video.readyState < video.HAVE_ENOUGH_DATA) {
       requestAnimationFrame(() => this.extractAndSendFrame());
       return;
     }
 
-    // Якщо код дійшов сюди — відео 100% готове і має розміри
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);

@@ -1,0 +1,10 @@
+.choose-config {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.profile-field {
+  flex: 1;
+  min-width: 220px;
+}

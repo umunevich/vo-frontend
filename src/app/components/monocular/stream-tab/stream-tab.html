@@ -1,14 +1,18 @@
-<div class="choose-device">
-  <mat-form-field appearance="fill">
-    <mat-label>Choose device</mat-label>
-    <mat-select [value]="selectedDevice" (selectionChange)="onCameraSelect($event.value)">
-      @for (camera of videoDevices(); track camera.deviceId) {
-        <mat-option [value]="camera">
-          {{ camera.label || 'Camera ' + ($index + 1) }}
-        </mat-option>
-      } @empty {
-        <mat-option disabled>No cameras available</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+<div class="workspace-controls">
+  <div class="choose-device">
+    <mat-form-field appearance="fill">
+      <mat-label>Choose device</mat-label>
+      <mat-select (selectionChange)="onCameraSelect($event.value)">
+        @for (camera of videoDevices(); track camera.deviceId) {
+          <mat-option [value]="camera">
+            {{ camera.label || 'Camera ' + ($index + 1) }}
+          </mat-option>
+        } @empty {
+          <mat-option disabled>No cameras available</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <app-camera-profile-controls />
 </div>

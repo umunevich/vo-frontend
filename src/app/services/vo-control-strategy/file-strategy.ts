@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { VoStart, VoReady, Switch } from './interface';
-import { VoData } from '../vo-data';
+import { VoFormData } from '../vo-form-data';
 import { VoRouter } from '@entities/vo-router';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { VoRouter } from '@entities/vo-router';
 export class FileStrategy implements VoStart, VoReady, Switch {
   constructor(
     @Inject(VoRouter) private voRouter: VoRouter,
-    private voData: VoData,
+    private voData: VoFormData,
   ) {}
   
   launch(): void {

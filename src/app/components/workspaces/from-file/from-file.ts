@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { VoData } from '@services/vo-data';
+import { VoFormData } from '@services/vo-form-data';
 import { VoStreamService, TrajectoryCoords } from '@services/vo-stream';
 import { Subscription } from 'rxjs';
 import * as Plotly from 'plotly.js-dist-min';
@@ -25,7 +25,7 @@ export class FromFileWorkspace implements OnInit, OnDestroy {
   private subs = new Subscription();
 
   constructor(
-    private voData: VoData,
+    private voFormData: VoFormData,
     @Inject(VoStreamService) private streamService: VoStreamService
   ) {}
 
@@ -62,7 +62,7 @@ export class FromFileWorkspace implements OnInit, OnDestroy {
   }
 
   private loadVideoFile() {
-    const file = this.voData.selectedFile();
+    const file = this.voFormData.selectedFile();
     if (file) {
       this.videoUrl = URL.createObjectURL(file);
       setTimeout(() => {
@@ -99,11 +99,11 @@ export class FromFileWorkspace implements OnInit, OnDestroy {
   }
 
   startProcessing() {
-    if (!this.voData.selectedFile()) return;
+    if (!this.voFormData.selectedFile()) return;
     
     this.isProcessing = true;
     this.videoElement.nativeElement.play();
-    this.streamService.connect();
+    this.streamService.connect(this.voFormData.selectedConfigId());
   }
 
   stopProcessing() {

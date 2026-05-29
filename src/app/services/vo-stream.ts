@@ -20,12 +20,16 @@ export class VoStreamService {
   private readyForNextFrameSubject = new Subject<void>();
   readyForNextFrame$ = this.readyForNextFrameSubject.asObservable();
 
-  connect(url: string = environment.voBackendWsUrl) {
+  connect(configId?: string | null, url?: string) {
+    const profileId = configId ?? 'euroc_default';
+    const wsUrl =
+      url ??
+      `${environment.voBackendWsUrl}/vo-stream?config_id=${encodeURIComponent(profileId)}`;
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
       return;
     }
 
-    this.ws = new WebSocket(url);
+    this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
       console.log('Connected to Python VO Backend');
@@ -33,9 +37,7 @@ export class VoStreamService {
     };
 
     this.ws.onmessage = (event) => {
-      const coords: TrajectoryCoords = JSON.parse(event.data);
-      this.coordsSubject.next(coords);
-      this.readyForNextFrameSubject.next(); 
+      this.onMessage(event);
     };
 
     this.ws.onclose = () => console.log('WebSocket connection closed');
@@ -53,5 +55,11 @@ export class VoStreamService {
       this.ws.close();
       this.ws = null;
     }
+  }
+
+  private onMessage(event: MessageEvent) {
+    const coords: TrajectoryCoords = JSON.parse(event.data);
+    this.coordsSubject.next(coords);
+    this.readyForNextFrameSubject.next(); 
   }
 }

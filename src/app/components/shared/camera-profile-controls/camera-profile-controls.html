@@ -1,0 +1,24 @@
+<div class="choose-config">
+  <mat-form-field appearance="fill" class="profile-field">
+    <mat-label>Camera calibration profile</mat-label>
+    <mat-select
+      [value]="selectedConfigId()"
+      (selectionChange)="onProfileChange($event.value)"
+      [disabled]="loading()">
+      @for (profile of profiles(); track profile.id) {
+        <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+      } @empty {
+        <mat-option disabled>No profiles — calibrate a camera first</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button
+    mat-icon-button
+    color="primary"
+    matTooltip="Calibrate camera from chessboard photos"
+    type="button"
+    (click)="openCreateDialog()">
+    <mat-icon>add_circle</mat-icon>
+  </button>
+</div>

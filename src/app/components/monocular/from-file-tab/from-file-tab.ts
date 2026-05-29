@@ -1,9 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormField, MatLabel } from '@angular/material/select';
-import { VoData } from '@services/vo-data';
+import { VoFormData } from '@services/vo-form-data';
+import { CameraProfileControls } from '@components/shared/camera-profile-controls/camera-profile-controls';
 
 @Component({
   selector: 'app-from-file-tab',
@@ -13,20 +14,22 @@ import { VoData } from '@services/vo-data';
     MatIcon,
     MatInputModule,
     MatButton,
+    CameraProfileControls,
   ],
   templateUrl: './from-file-tab.html',
   styleUrl: './from-file-tab.css',
 })
 export class FromFileTab {
-  selectedFileName: string = ''
+  selectedFileName = '';
 
-  constructor(private voData: VoData) {}
+  constructor(private voFormData: VoFormData) {}
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (file) {
       this.selectedFileName = file.name;
-      this.voData.selectedFile.set(file);
+      this.voFormData.selectedFile.set(file);
     }
   }
 }

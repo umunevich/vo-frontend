@@ -1,0 +1,62 @@
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.hint {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+}
+
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-count {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.run-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error {
+  color: #b00020;
+  margin: 0;
+}
+
+.result-panel {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.result-panel h3 {
+  margin: 0 0 0.5rem;
+}
+
+.result-panel p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}

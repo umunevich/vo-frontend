@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { VoData } from './vo-data';
+import { VoFormData } from './vo-form-data';
 
-describe('VoData', () => {
-  let service: VoData;
+describe('VoFormData', () => {
+  let service: VoFormData;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(VoData);
+    service = TestBed.inject(VoFormData);
   });
 
   it('should be created', () => {

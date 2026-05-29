@@ -1,0 +1,126 @@
+<h2 mat-dialog-title>Calibrate camera</h2>
+
+<mat-dialog-content [formGroup]="configForm" class="dialog-body">
+  <p class="hint">
+    Capture 10–30 photos of a printed chessboard from different angles and distances.
+    Use the number of <strong>inner</strong> corners (not squares) for your pattern.
+  </p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Profile name</mat-label>
+    <input matInput formControlName="name" placeholder="e.g. MacBook webcam">
+  </mat-form-field>
+
+  <h3>Chessboard pattern</h3>
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Inner corners (columns)</mat-label>
+      <input matInput type="number" formControlName="inner_corners_cols">
+      <mat-hint>Along board width</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Inner corners (rows)</mat-label>
+      <input matInput type="number" formControlName="inner_corners_rows">
+      <mat-hint>Along board height</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Square size (mm)</mat-label>
+      <input matInput type="number" step="0.1" formControlName="square_size_mm">
+    </mat-form-field>
+  </div>
+
+  <div class="upload-row">
+    <input
+      #folderInput
+      type="file"
+      accept="image/*"
+      multiple
+      webkitdirectory
+      hidden
+      (change)="onCalibrationImagesSelected($event)">
+
+    <input
+      #filesInput
+      type="file"
+      accept="image/*"
+      multiple
+      hidden
+      (change)="onCalibrationImagesSelected($event)">
+
+    <button mat-stroked-button type="button" (click)="folderInput.click()">
+      <mat-icon>folder</mat-icon>
+      Select folder
+    </button>
+    <button mat-stroked-button type="button" (click)="filesInput.click()">
+      <mat-icon>photo_library</mat-icon>
+      Select images
+    </button>
+    <span class="file-count">{{ selectedImageCount() }} image(s) selected</span>
+  </div>
+
+  <button
+    mat-flat-button
+    color="accent"
+    type="button"
+    class="run-btn"
+    [disabled]="calibrating() || selectedImageCount() < 3"
+    (click)="runCalibration()">
+    @if (calibrating()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      Running calibration…
+    } @else {
+      Run calibration
+    }
+  </button>
+
+  @if (calibrationError()) {
+    <p class="error">{{ calibrationError() }}</p>
+  }
+
+  @if (calibrationResult(); as result) {
+    <div class="result-panel">
+      <h3>Estimated intrinsics</h3>
+      <p>
+        Used {{ result.images_used }} image(s).
+        Reprojection error: {{ result.reprojection_error | number: '1.3-3' }} px.
+        Resolution: {{ result.image_width }}×{{ result.image_height }}.
+      </p>
+      <div class="form-grid" formGroupName="camera">
+        <mat-form-field appearance="outline">
+          <mat-label>fu</mat-label>
+          <input matInput type="number" formControlName="fu" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>fv</mat-label>
+          <input matInput type="number" formControlName="fv" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>cu</mat-label>
+          <input matInput type="number" formControlName="cu" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>cv</mat-label>
+          <input matInput type="number" formControlName="cv" readonly>
+        </mat-form-field>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!canSave()"
+    (click)="onSubmit()">
+    @if (saving()) {
+      Saving…
+    } @else {
+      Save profile
+    }
+  </button>
+</mat-dialog-actions>
