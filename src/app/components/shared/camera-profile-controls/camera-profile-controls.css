@@ -1,10 +1,16 @@
 .choose-config {
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 
+.add-profile-btn {
+  margin-bottom: 0.84375em;
+}
+
 .profile-field {
   flex: 1;
   min-width: 220px;
+  margin-bottom: 0;
 }
