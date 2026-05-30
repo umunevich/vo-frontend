@@ -3,7 +3,9 @@
 <mat-dialog-content [formGroup]="configForm" class="dialog-body">
   <p class="hint">
     Capture 10–30 photos of a printed chessboard from different angles and distances.
-    Use the number of <strong>inner</strong> corners (not squares) for your pattern.
+    Use the number of <strong>inner</strong> corners (not squares).
+    EuRoC <code>cam_checkerboard</code> dataset: <strong>6×7</strong> inner corners, ~38&nbsp;mm squares —
+    select the whole <code>cam0/data</code> folder (needs 3+ images).
   </p>
 
   <mat-form-field appearance="outline" class="full-width">
@@ -35,7 +37,7 @@
     <input
       #folderInput
       type="file"
-      accept="image/*"
+      accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
       multiple
       webkitdirectory
       hidden
@@ -44,7 +46,7 @@
     <input
       #filesInput
       type="file"
-      accept="image/*"
+      accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
       multiple
       hidden
       (change)="onCalibrationImagesSelected($event)">
@@ -83,7 +85,12 @@
     <div class="result-panel">
       <h3>Estimated intrinsics</h3>
       <p>
-        Used {{ result.images_used }} image(s).
+        Used {{ result.images_used }} image(s)
+        @if (result.pattern_auto_detected) {
+          — pattern auto-detected as {{ result.inner_corners_cols }}×{{ result.inner_corners_rows }} inner corners.
+        } @else {
+          — pattern {{ result.inner_corners_cols }}×{{ result.inner_corners_rows }} inner corners.
+        }
         Reprojection error: {{ result.reprojection_error | number: '1.3-3' }} px.
         Resolution: {{ result.image_width }}×{{ result.image_height }}.
       </p>

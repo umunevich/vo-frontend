@@ -42,9 +42,9 @@ export class CreateConfigDialog {
   ) {
     this.configForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(1)]],
-      inner_corners_cols: [9, [Validators.required, Validators.min(3)]],
-      inner_corners_rows: [6, [Validators.required, Validators.min(3)]],
-      square_size_mm: [25, [Validators.required, Validators.min(0.1)]],
+      inner_corners_cols: [6, [Validators.required, Validators.min(3)]],
+      inner_corners_rows: [7, [Validators.required, Validators.min(3)]],
+      square_size_mm: [38, [Validators.required, Validators.min(0.1)]],
       camera: this.fb.group({
         fu: [{ value: 0, disabled: true }, [Validators.required, Validators.min(1)]],
         fv: [{ value: 0, disabled: true }, [Validators.required, Validators.min(1)]],
@@ -57,10 +57,17 @@ export class CreateConfigDialog {
   onCalibrationImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files ? Array.from(input.files) : [];
-    this.calibrationFiles = files.filter((file) => file.type.startsWith('image/'));
+    this.calibrationFiles = files.filter((file) => this.isImageFile(file));
     this.selectedImageCount.set(this.calibrationFiles.length);
     this.calibrationError.set(null);
     input.value = '';
+  }
+
+  private isImageFile(file: File): boolean {
+    if (file.type.startsWith('image/')) {
+      return true;
+    }
+    return /\.(png|jpe?g|webp|bmp)$/i.test(file.name);
   }
 
   runCalibration(): void {
@@ -86,6 +93,10 @@ export class CreateConfigDialog {
       .subscribe({
         next: (result) => {
           this.calibrationResult.set(result);
+          this.configForm.patchValue({
+            inner_corners_cols: result.inner_corners_cols,
+            inner_corners_rows: result.inner_corners_rows,
+          });
           this.configForm.get('camera')?.patchValue(result.camera);
           this.calibrating.set(false);
         },
@@ -109,8 +120,6 @@ export class CreateConfigDialog {
       return;
     }
 
-    const cols = this.configForm.get('inner_corners_cols')?.value;
-    const rows = this.configForm.get('inner_corners_rows')?.value;
     const squareMm = this.configForm.get('square_size_mm')?.value;
 
     const payload: CameraProfilePayload = {
@@ -119,8 +128,8 @@ export class CreateConfigDialog {
       distortion: result.distortion,
       calibration: {
         source: 'chessboard',
-        inner_corners_cols: cols,
-        inner_corners_rows: rows,
+        inner_corners_cols: result.inner_corners_cols,
+        inner_corners_rows: result.inner_corners_rows,
         square_size_m: squareMm / 1000,
         reprojection_error: result.reprojection_error,
         images_used: result.images_used,

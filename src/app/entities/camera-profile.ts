@@ -17,6 +17,9 @@ export interface CalibrationResult {
   images_used: number;
   image_width: number;
   image_height: number;
+  inner_corners_cols: number;
+  inner_corners_rows: number;
+  pattern_auto_detected?: boolean;
 }
 
 export interface CameraProfilePayload {
