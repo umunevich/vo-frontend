@@ -37,6 +37,10 @@ export class CameraProfileControls implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const existing = this.voFormData.selectedConfigId();
+    if (existing) {
+      this.selectedConfigId.set(existing);
+    }
     this.reloadProfiles();
   }
 

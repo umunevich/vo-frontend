@@ -9,57 +9,71 @@ export interface TrajectoryCoords {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class VoStreamService {
   private ws: WebSocket | null = null;
-  
+  private activeConfigId: string | null = null;
+
   private coordsSubject = new Subject<TrajectoryCoords>();
   coords$ = this.coordsSubject.asObservable();
-  
+
   private readyForNextFrameSubject = new Subject<void>();
   readyForNextFrame$ = this.readyForNextFrameSubject.asObservable();
 
-  connect(configId?: string | null, url?: string) {
-    const profileId = configId ?? 'euroc_default';
-    const wsUrl =
-      url ??
-      `${environment.voBackendWsUrl}/vo-stream?config_id=${encodeURIComponent(profileId)}`;
-    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+  connect(configId: string | null | undefined): void {
+    if (!configId) {
+      console.error('[VoStreamService] Missing camera profile id; cannot start VO stream.');
       return;
     }
 
+    const wsUrl = `${environment.voBackendWsUrl}/vo-stream?config_id=${encodeURIComponent(configId)}`;
+
+    if (
+      this.ws &&
+      this.activeConfigId === configId &&
+      (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)
+    ) {
+      return;
+    }
+
+    this.disconnect();
+    this.activeConfigId = configId;
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
-      console.log('Connected to Python VO Backend');
-      this.readyForNextFrameSubject.next(); 
+      console.log(`Connected to VO backend with profile "${configId}"`);
+      this.readyForNextFrameSubject.next();
     };
 
     this.ws.onmessage = (event) => {
       this.onMessage(event);
     };
 
-    this.ws.onclose = () => console.log('WebSocket connection closed');
+    this.ws.onclose = () => {
+      console.log('WebSocket connection closed');
+      this.activeConfigId = null;
+    };
     this.ws.onerror = (error) => console.error('WebSocket error:', error);
   }
 
-  sendFrame(frameData: string) {
+  sendFrame(frameData: string): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(frameData);
     }
   }
 
-  disconnect() {
+  disconnect(): void {
     if (this.ws) {
       this.ws.close();
       this.ws = null;
     }
+    this.activeConfigId = null;
   }
 
-  private onMessage(event: MessageEvent) {
+  private onMessage(event: MessageEvent): void {
     const coords: TrajectoryCoords = JSON.parse(event.data);
     this.coordsSubject.next(coords);
-    this.readyForNextFrameSubject.next(); 
+    this.readyForNextFrameSubject.next();
   }
 }
