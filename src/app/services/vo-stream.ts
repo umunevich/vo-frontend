@@ -6,6 +6,7 @@ export interface TrajectoryCoords {
   x: number;
   y: number;
   z: number;
+  confidence?: number;
 }
 
 @Injectable({
@@ -14,12 +15,20 @@ export interface TrajectoryCoords {
 export class VoStreamService {
   private ws: WebSocket | null = null;
   private activeConfigId: string | null = null;
+  private pendingFrame: string | null = null;
 
   private coordsSubject = new Subject<TrajectoryCoords>();
   coords$ = this.coordsSubject.asObservable();
 
   private readyForNextFrameSubject = new Subject<void>();
   readyForNextFrame$ = this.readyForNextFrameSubject.asObservable();
+
+  private connectedSubject = new Subject<void>();
+  connected$ = this.connectedSubject.asObservable();
+
+  get isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
 
   connect(configId: string | null | undefined): void {
     if (!configId) {
@@ -43,6 +52,8 @@ export class VoStreamService {
 
     this.ws.onopen = () => {
       console.log(`Connected to VO backend with profile "${configId}"`);
+      this.connectedSubject.next();
+      this.flushPendingFrame();
       this.readyForNextFrameSubject.next();
     };
 
@@ -60,7 +71,11 @@ export class VoStreamService {
   sendFrame(frameData: string): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(frameData);
+      return;
     }
+
+    // Hold one frame until the socket finishes connecting.
+    this.pendingFrame = frameData;
   }
 
   disconnect(): void {
@@ -69,11 +84,23 @@ export class VoStreamService {
       this.ws = null;
     }
     this.activeConfigId = null;
+    this.pendingFrame = null;
+  }
+
+  private flushPendingFrame(): void {
+    if (this.pendingFrame && this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(this.pendingFrame);
+      this.pendingFrame = null;
+    }
   }
 
   private onMessage(event: MessageEvent): void {
-    const coords: TrajectoryCoords = JSON.parse(event.data);
-    this.coordsSubject.next(coords);
-    this.readyForNextFrameSubject.next();
+    try {
+      const coords: TrajectoryCoords = JSON.parse(event.data);
+      this.coordsSubject.next(coords);
+      this.readyForNextFrameSubject.next();
+    } catch (error) {
+      console.error('[VoStreamService] Failed to parse VO response:', error, event.data);
+    }
   }
 }

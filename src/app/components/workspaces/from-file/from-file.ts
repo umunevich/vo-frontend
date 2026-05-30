@@ -89,8 +89,10 @@ export class FromFileWorkspace implements OnInit, OnDestroy {
       scene: {
         xaxis: { title: { text: 'X (Right)' } },
         yaxis: { title: { text: 'Y (Down)' } },
-        zaxis: { title: { text: 'Z (Forward)' } }
-      }
+        zaxis: { title: { text: 'Z (Forward)' } },
+        aspectmode: 'data',
+      },
+      uirevision: 'file-trajectory',
     };
 
     const config: Partial<Plotly.Config> = { responsive: true };
@@ -99,11 +101,15 @@ export class FromFileWorkspace implements OnInit, OnDestroy {
   }
 
   startProcessing() {
-    if (!this.voFormData.selectedFile()) return;
-    
+    const configId = this.voFormData.selectedConfigId();
+    if (!this.voFormData.selectedFile() || !configId) {
+      console.error('[FromFileWorkspace] Missing video file or camera profile.');
+      return;
+    }
+
     this.isProcessing = true;
+    this.streamService.connect(configId);
     this.videoElement.nativeElement.play();
-    this.streamService.connect(this.voFormData.selectedConfigId());
   }
 
   stopProcessing() {
@@ -123,7 +129,7 @@ export class FromFileWorkspace implements OnInit, OnDestroy {
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const base64Frame = canvas.toDataURL('image/jpeg', 0.6);
+    const base64Frame = canvas.toDataURL('image/jpeg', 0.85);
     this.streamService.sendFrame(base64Frame);
   }
 

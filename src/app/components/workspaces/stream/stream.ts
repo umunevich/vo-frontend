@@ -30,9 +30,15 @@ export class StreamWorkspace implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initPlot();
     this.setupNetworkListeners();
-    this.startVideo().then(() => {
-      this.streamService.connect(this.voFormData.selectedConfigId());
-    });
+
+    const configId = this.voFormData.selectedConfigId();
+    if (!configId) {
+      console.error('[StreamWorkspace] No camera profile selected.');
+      return;
+    }
+
+    this.streamService.connect(configId);
+    this.startVideo();
   }
 
   private setupNetworkListeners() {
@@ -42,16 +48,22 @@ export class StreamWorkspace implements OnInit, OnDestroy {
         this.trajectory.y.push(coords.y);
         this.trajectory.z.push(coords.z);
 
-        Plotly.extendTraces(this.plotElement.nativeElement, {
-          x: [[coords.x]], y: [[coords.y]], z: [[coords.z]]
-        }, [0]);
-      })
+        Plotly.extendTraces(
+          this.plotElement.nativeElement,
+          {
+            x: [[coords.x]],
+            y: [[coords.y]],
+            z: [[coords.z]],
+          },
+          [0],
+        );
+      }),
     );
 
     this.subs.add(
       this.streamService.readyForNextFrame$.subscribe(() => {
         requestAnimationFrame(() => this.extractAndSendFrame());
-      })
+      }),
     );
   }
   
@@ -69,10 +81,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
         this.stream = await navigator.mediaDevices.getUserMedia(constraints);
         const video = this.videoElement.nativeElement;
         video.srcObject = this.stream;
-
-        video.onloadedmetadata = () => {
-          requestAnimationFrame(() => this.extractAndSendFrame());
-        };
+        await video.play();
 
       } catch (err) {
         console.error("Failed to access camera: ", err);
@@ -97,8 +106,10 @@ export class StreamWorkspace implements OnInit, OnDestroy {
       scene: {
         xaxis: { title: { text: 'X (Right)' } },
         yaxis: { title: { text: 'Y (Down)' } },
-        zaxis: { title: { text: 'Z (Forward)' } }
-      }
+        zaxis: { title: { text: 'Z (Forward)' } },
+        aspectmode: 'data',
+      },
+      uirevision: 'stream-trajectory',
     };
 
     const config: Partial<Plotly.Config> = { responsive: true };
@@ -122,7 +133,7 @@ export class StreamWorkspace implements OnInit, OnDestroy {
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    const frameData = canvas.toDataURL('image/jpeg', 0.6);
+    const frameData = canvas.toDataURL('image/jpeg', 0.85);
     
     this.streamService.sendFrame(frameData); 
   }
