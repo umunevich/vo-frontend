@@ -48,25 +48,34 @@
     <canvas #frameCanvas style="display: none;"></canvas>
   </div>
 
-  @if (evalResult) {
-    <div class="eval-panel">
-      <h3>Evaluation vs {{ evalResult.sequence_label }}</h3>
-      <dl class="eval-metrics">
-        <div><dt>Global scale s</dt><dd>{{ evalResult.global_scale | number:'1.4-4' }}</dd></div>
-        <div><dt>ATE RMSE</dt><dd>{{ evalResult.ate_rmse_m | number:'1.3-3' }} m</dd></div>
-        <div><dt>ATE median</dt><dd>{{ evalResult.ate_median_m | number:'1.3-3' }} m</dd></div>
-        <div><dt>GT path</dt><dd>{{ evalResult.gt_path_length_m | number:'1.1-1' }} m</dd></div>
-        <div><dt>VO path (scaled)</dt><dd>{{ evalResult.est_path_length_scaled_m | number:'1.1-1' }} m</dd></div>
-        <div><dt>Samples</dt><dd>{{ evalResult.n_samples }}</dd></div>
-      </dl>
-    </div>
-  }
+  <app-vo-status-bar
+    [tracking]="trackingState()"
+    [confidence]="confidence()">
+  </app-vo-status-bar>
 
   @if (evalError) {
     <p class="eval-error">{{ evalError }}</p>
   }
 
   <div class="plot-panel">
+    @if (evalResult) {
+      <div class="eval-panel">
+        <h3>Evaluation vs {{ evalResult.sequence_label }}</h3>
+        <dl class="eval-metrics">
+          <div><dt>Global scale s</dt><dd>{{ evalResult.global_scale | number:'1.4-4' }}</dd></div>
+          <div><dt>ATE RMSE</dt><dd>{{ evalResult.ate_rmse_m | number:'1.3-3' }} m</dd></div>
+          <div><dt>ATE median</dt><dd>{{ evalResult.ate_median_m | number:'1.3-3' }} m</dd></div>
+          <div><dt>ATE mean</dt><dd>{{ evalResult.ate_mean_m | number:'1.3-3' }} m</dd></div>
+          <div><dt>GT path</dt><dd>{{ evalResult.gt_path_length_m | number:'1.1-1' }} m</dd></div>
+          <div><dt>VO path (scaled)</dt><dd>{{ evalResult.est_path_length_scaled_m | number:'1.1-1' }} m</dd></div>
+          <div><dt>VO path (raw)</dt><dd>{{ evalResult.est_path_length_raw | number:'1.1-1' }} u</dd></div>
+          <div><dt>End error</dt><dd>{{ evalResult.end_error_m | number:'1.3-3' }} m</dd></div>
+          <div><dt>Drift</dt><dd>{{ evalResult.drift_pct | number:'1.2-2' }} %</dd></div>
+          <div><dt>Samples</dt><dd>{{ evalResult.n_samples }}</dd></div>
+        </dl>
+      </div>
+    }
+
     <div #plotElement id="plotly-vo-chart"></div>
   </div>
 

@@ -1,0 +1,107 @@
+.vo-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f5f7fa;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+}
+
+.vo-status-bar.compact {
+  padding: 8px 12px;
+  gap: 12px 16px;
+  background: rgba(20, 24, 32, 0.88);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #5c6578;
+}
+
+.compact .label {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.value {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.tracking-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.tracking-badge[data-state='idle'] {
+  background: #e8ebf0;
+  color: #5c6578;
+}
+
+.tracking-badge[data-state='initializing'] {
+  background: #e3e8ef;
+  color: #475569;
+}
+
+.tracking-badge[data-state='ok'] {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tracking-badge[data-state='degraded'] {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tracking-badge[data-state='lost'] {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.compact .tracking-badge[data-state='idle'] {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.compact .tracking-badge[data-state='initializing'] {
+  background: rgba(148, 163, 184, 0.25);
+  color: #e2e8f0;
+}
+
+.compact .tracking-badge[data-state='ok'] {
+  background: rgba(34, 197, 94, 0.25);
+  color: #86efac;
+}
+
+.compact .tracking-badge[data-state='degraded'] {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+}
+
+.compact .tracking-badge[data-state='lost'] {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
+.confidence-value {
+  color: #1e293b;
+  font-variant-numeric: tabular-nums;
+}
+
+.compact .confidence-value {
+  color: #f8fafc;
+}

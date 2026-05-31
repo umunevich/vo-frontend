@@ -1,0 +1,12 @@
+<div class="vo-status-bar" [class.compact]="compact()">
+  <div class="status-item">
+    <span class="label">Tracking</span>
+    <span class="value tracking-badge" [attr.data-state]="displayTracking() ?? 'idle'">
+      {{ trackingLabel() }}
+    </span>
+  </div>
+  <div class="status-item">
+    <span class="label">Confidence</span>
+    <span class="value confidence-value">{{ confidenceText() }}</span>
+  </div>
+</div>

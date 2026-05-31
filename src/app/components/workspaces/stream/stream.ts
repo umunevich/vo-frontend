@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef, Inject, signal } from '@angular/core';
+import { VoStatusBar, VoTrackingState } from '@components/shared/vo-status-bar/vo-status-bar';
 import { VoFormData } from '@services/vo-form-data';
 import { VoStreamService, TrajectoryCoords } from '@services/vo-stream';
 import { Subscription } from 'rxjs';
@@ -8,7 +9,7 @@ import * as Plotly from 'plotly.js-dist-min';
 @Component({
   selector: 'app-stream-workspace',
   standalone: true,
-  imports: [DragDropModule],
+  imports: [DragDropModule, VoStatusBar],
   templateUrl: './stream.html',
   styleUrls: ['./stream.css'],
 })
@@ -19,6 +20,8 @@ export class StreamWorkspace implements OnInit, OnDestroy {
 
   stream: MediaStream | null = null;
   trajectory = { x: [0], y: [0], z: [0] };
+  trackingState = signal<VoTrackingState>(null);
+  confidence = signal<number | null>(null);
   
   private subs = new Subscription();
 
@@ -44,6 +47,13 @@ export class StreamWorkspace implements OnInit, OnDestroy {
   private setupNetworkListeners() {
     this.subs.add(
       this.streamService.coords$.subscribe((coords: TrajectoryCoords) => {
+        this.trackingState.set((coords.tracking as VoTrackingState) ?? null);
+        this.confidence.set(
+          typeof coords.confidence === 'number' && Number.isFinite(coords.confidence)
+            ? coords.confidence
+            : null,
+        );
+
         this.trajectory.x.push(coords.x);
         this.trajectory.y.push(coords.y);
         this.trajectory.z.push(coords.z);

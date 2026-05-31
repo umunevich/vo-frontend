@@ -11,6 +11,7 @@ export interface EuRoCSequenceInfo {
   id: string;
   label: string;
   available: boolean;
+  frame_count?: number;
 }
 
 export interface TrajectoryExportRequest {
@@ -43,4 +44,5 @@ export interface TrajectoryEvaluateResponse {
   tum_raw: string;
   tum_scaled: string;
   scaled_positions: number[][];
+  ground_truth_positions: number[][];
 }

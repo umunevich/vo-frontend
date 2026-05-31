@@ -6,6 +6,12 @@
 
     <div class="video-overlay" cdkDrag cdkDragBoundary=".workspace-fullscreen">        
         <video #videoElement class="video-stream" autoplay playsinline muted></video>
+        <app-vo-status-bar
+          class="status-overlay"
+          [compact]="true"
+          [tracking]="trackingState()"
+          [confidence]="confidence()">
+        </app-vo-status-bar>
         <canvas #canvasElement style="display: none;"></canvas>
     </div>
 
