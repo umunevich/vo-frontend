@@ -39,6 +39,57 @@
   padding: 8px 0;
 }
 
+.sequence-field {
+  width: 100%;
+}
+
+.eval-panel {
+  background: #f5f9ff;
+  border: 1px solid #c5d9f0;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.eval-panel h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.eval-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+
+.eval-metrics div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eval-metrics dt {
+  font-size: 0.75rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.eval-metrics dd {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.eval-error {
+  color: #b00020;
+  margin: 0;
+  padding: 8px 12px;
+  background: #fdecea;
+  border-radius: 6px;
+}
+
 .plot-panel {
   width: 100%;
   background: #ffffff;

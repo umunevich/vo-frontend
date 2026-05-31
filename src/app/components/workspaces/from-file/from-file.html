@@ -1,9 +1,9 @@
 <div class="workspace-container">
-  
+
   <div class="media-panel">
-    
+
     <video #videoPlayer controls muted playsinline class="video-preview"></video>
-    
+
     <div class="controls">
       <button mat-flat-button color="primary" (click)="startProcessing()" [disabled]="isProcessing">
         <mat-icon>play_arrow</mat-icon> Start VO
@@ -11,13 +11,63 @@
       <button mat-stroked-button color="warn" (click)="stopProcessing()" [disabled]="!isProcessing">
         <mat-icon>stop</mat-icon> Stop
       </button>
+
+      <mat-form-field appearance="outline" class="sequence-field">
+        <mat-label>EuRoC sequence (GT)</mat-label>
+        <mat-select [(value)]="selectedSequenceId">
+          @for (seq of eurocSequences; track seq.id) {
+            <mat-option [value]="seq.id" [disabled]="!seq.available">
+              {{ seq.label }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-stroked-button
+        (click)="exportTumRaw()"
+        [disabled]="!hasTrajectory || isProcessing">
+        <mat-icon>download</mat-icon> Export TUM
+      </button>
+      <button
+        mat-stroked-button
+        (click)="exportTumScaled()"
+        [disabled]="!hasTrajectory || isProcessing || !selectedSequenceAvailable">
+        <mat-icon>straighten</mat-icon> Export scaled TUM
+      </button>
+      <button
+        mat-flat-button
+        color="accent"
+        (click)="evaluateScale()"
+        [disabled]="!hasTrajectory || isProcessing || isEvaluating || !selectedSequenceAvailable">
+        <mat-icon>analytics</mat-icon>
+        {{ isEvaluating ? 'Evaluating…' : 'Compute global scale' }}
+      </button>
     </div>
-    
+
     <canvas #frameCanvas style="display: none;"></canvas>
   </div>
+
+  @if (evalResult) {
+    <div class="eval-panel">
+      <h3>Evaluation vs {{ evalResult.sequence_label }}</h3>
+      <dl class="eval-metrics">
+        <div><dt>Global scale s</dt><dd>{{ evalResult.global_scale | number:'1.4-4' }}</dd></div>
+        <div><dt>ATE RMSE</dt><dd>{{ evalResult.ate_rmse_m | number:'1.3-3' }} m</dd></div>
+        <div><dt>ATE median</dt><dd>{{ evalResult.ate_median_m | number:'1.3-3' }} m</dd></div>
+        <div><dt>GT path</dt><dd>{{ evalResult.gt_path_length_m | number:'1.1-1' }} m</dd></div>
+        <div><dt>VO path (scaled)</dt><dd>{{ evalResult.est_path_length_scaled_m | number:'1.1-1' }} m</dd></div>
+        <div><dt>Samples</dt><dd>{{ evalResult.n_samples }}</dd></div>
+      </dl>
+    </div>
+  }
+
+  @if (evalError) {
+    <p class="eval-error">{{ evalError }}</p>
+  }
 
   <div class="plot-panel">
     <div #plotElement id="plotly-vo-chart"></div>
   </div>
-  
+
 </div>
